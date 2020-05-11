@@ -1,0 +1,10 @@
+## Interface: 80300
+## Title: Raid Reminders
+## Notes: A tool for players to set timers on a per boss basis for things like cooldowns or assigned mechanics.
+## Author: Krames (Wahter - Dalaran)
+## SavedVariables: RaidRemindersDB
+## Version: 0.1
+
+embeds.xml
+
+Core.lua
