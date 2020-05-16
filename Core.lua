@@ -75,12 +75,22 @@ local textstore
 --
 -- Combat Timer --
 --
+function RaidReminders:ScheduleReminder(text, time, delay)
+  RaidReminders:ScheduleTimer(function() print(text) end, time)
+end
+
 function RaidReminders:EncounterStart(...)
   print("Combat has started")
+
+  self:ScheduleReminder("Weapon buffs", 3)
+  self:ScheduleReminder("Pop Heroism", 8)
+  self:ScheduleReminder("RESET BOSS", 15)
 end
 
 function RaidReminders:EncounterEnd(...)
   print("Combat has Ended")
+
+  RaidReminders:CancelAllTimers()
 end
 function events:ENCOUNTER_START(...)
   print("Combat has started")
