@@ -11,12 +11,13 @@ local eventFrame, events = CreateFrame("Frame"), {}
 function RaidReminders:OnInitialize()
   -- Code that's run when first loaded
   local isConfigOpen = false
+
   -- Registers slash command to open the Raid Reminders Window
   self:RegisterChatCommand("raidreminders", "RaidRemindersToggleWindow")
+
   -- Registers the encounter start and end events for when 
   self:RegisterEvent("ENCOUNTER_START", "EncounterStart")
   self:RegisterEvent("ENCOUNTER_END", "EncounterEnd")
-
 end
 
 function RaidReminders:OnEnable()
@@ -37,7 +38,6 @@ local function showFrame()
     isConfigOpen = true
   end
 
-  RaidReminders:Print("Yup, the addon is working")
   local OptionsContainer = AceGUI:Create("Frame")
   OptionsContainer:SetTitle("Raid Reminders")
   OptionsContainer:SetCallback("OnClose", 
@@ -48,20 +48,12 @@ local function showFrame()
   )
   OptionsContainer:SetLayout("Flow")
 
-  local editbox = AceGUI:Create("EditBox")
-  editbox:SetLabel("Testing the test:")
-  editbox:SetWidth(200)
-  editbox:SetCallback("OnEnterPressed",
-    function(widget, event, text)
-      textstore = text
-    end
-  )
-  OptionsContainer:AddChild(editbox)
-
   local button = AceGUI:Create("Button")
-  button:SetText("Push me!")
+  button:SetText("Add Reminder")
   button:SetWidth(100)
-  button:SetCallback("OnClick", function() print(textstore) end)
+  button:SetCallback("OnClick", function()
+    createNewReminder(OptionsContainer)
+  end)
   OptionsContainer:AddChild(button)
 end
 
@@ -71,6 +63,18 @@ function RaidReminders:RaidRemindersToggleWindow(input)
 end
 
 local textstore
+
+function createNewReminder(parentFrame)
+  local editbox = AceGUI:Create("EditBox")
+  editbox:SetLabel("Testing the test:")
+  editbox:SetWidth(200)
+  editbox:SetCallback("OnEnterPressed",
+    function(widget, event, text)
+      textstore = text
+    end
+  )
+  parentFrame:AddChild(editbox)
+end
 
 --
 -- Combat Timer --
@@ -82,6 +86,12 @@ end
 function RaidReminders:EncounterStart(...)
   print("Combat has started")
 
+  -- Start timers based on ones set in the configuration
+    -- Config needs to be created first
+
+  -- Load reminders based on what boss encounter has been engaged
+
+  -- Test reminders
   self:ScheduleReminder("Weapon buffs", 3)
   self:ScheduleReminder("Pop Heroism", 8)
   self:ScheduleReminder("RESET BOSS", 15)
