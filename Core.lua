@@ -1,6 +1,8 @@
 -- This addon is using the Ace3 addon framework
-local RaidReminders = LibStub("AceAddon-3.0"):NewAddon("RaidReminders", "AceConsole-3.0")
+local RaidReminders = LibStub("AceAddon-3.0"):NewAddon("RaidReminders", "AceConsole-3.0", "AceTimer-3.0", "AceEvent-3.0")
 local AceGUI = LibStub("AceGUI-3.0")
+
+local eventFrame, events = CreateFrame("Frame"), {}
 
 -- Will probably need to refactor config stuff into it's own file
 -- local AceConfig = LibStub("AceConfig-3.0")
@@ -10,7 +12,11 @@ function RaidReminders:OnInitialize()
   -- Code that's run when first loaded
   local isConfigOpen = false
   -- Registers slash command to open the Raid Reminders Window
-  RaidReminders:RegisterChatCommand("raidreminders", "RaidRemindersToggleWindow")
+  self:RegisterChatCommand("raidreminders", "RaidRemindersToggleWindow")
+  -- Registers the encounter start and end events for when 
+  self:RegisterEvent("ENCOUNTER_START", "EncounterStart")
+  self:RegisterEvent("ENCOUNTER_END", "EncounterEnd")
+
 end
 
 function RaidReminders:OnEnable()
@@ -21,6 +27,9 @@ function RaidReminders:OnDisable()
   -- When addon is disabled
 end
 
+--
+-- UI --
+--
 local function showFrame()
   if isConfigOpen then 
     return
@@ -61,7 +70,22 @@ function RaidReminders:RaidRemindersToggleWindow(input)
   showFrame()
 end
 
---
--- UI --
---
 local textstore
+
+--
+-- Combat Timer --
+--
+function RaidReminders:EncounterStart(...)
+  print("Combat has started")
+end
+
+function RaidReminders:EncounterEnd(...)
+  print("Combat has Ended")
+end
+function events:ENCOUNTER_START(...)
+  print("Combat has started")
+end
+
+function events:ENCOUNTER_END(...)
+  print("Combat has ended")
+end
