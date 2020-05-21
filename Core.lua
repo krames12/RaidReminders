@@ -109,3 +109,31 @@ end
 function events:ENCOUNTER_END(...)
   print("Combat has ended")
 end
+
+-- Config example
+-- local options = {
+  -- Array of bosses & data per boss per instance
+  -- Check difficulty?
+--   ["reminders"] = [
+--     "xanesh" : [
+--       {
+--         ["timer"]: 110,
+--         ["text"]: "Pop your wings ya numbskull",
+--         ["buffer"]: 5,
+--         ["sound"]: "../path-to-sound"
+--       },
+--       { ... }
+--     ],
+--     "vexiona": [
+--       {...}
+--     ]
+--   ]
+
+--   ["profile"] = {
+--     ["positionX"]: 532
+--   }
+
+--   addReminder = function(self, args)
+--     self["reminders"]
+--   end
+-- }
