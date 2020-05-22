@@ -1,5 +1,7 @@
 -- This addon is using the Ace3 addon framework
 local RaidReminders = LibStub("AceAddon-3.0"):NewAddon("RaidReminders", "AceConsole-3.0", "AceTimer-3.0", "AceEvent-3.0")
+local AceConfig = LibStub("AceConfig-3.0")
+local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceGUI = LibStub("AceGUI-3.0")
 
 local eventFrame, events = CreateFrame("Frame"), {}
@@ -8,12 +10,65 @@ local eventFrame, events = CreateFrame("Frame"), {}
 -- local AceConfig = LibStub("AceConfig-3.0")
 -- AceConfig:RegisterOptionsTable("RaidReminders", {}, {"/raidreminders", "/rr"})
 
+local configOptionsTable = {
+  type = "group",
+  args = {
+    bfa={
+      name = "Battle for Azeroth",
+      type = "group",
+      args={
+        -- nyalotha={
+        --   name = "Ny'alotha"
+        --   type = "group",
+        --   args={
+        --     wrathion={
+        --       name = "Wrathion",
+        --       type = "group",
+        --       args={
+
+        --       }
+        --     }
+        --   }
+        -- }
+        freehold={
+          name = "Freehold - Dungeon",
+          type = "group",
+          args={
+            text={
+              name = "Text",
+              type = "input"
+            },
+            timer={
+              name = "Timer (in seconds)",
+              type = "range",
+              min = 0,
+              max = 999,
+              -- below: not working when trying to `get`
+              -- set = function(info, value) RaidReminders.bfa.freehold.timer = value end,
+              -- get = function(info) return RaidReminders.bfa.freehold.timer end
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 function RaidReminders:OnInitialize()
   -- Code that's run when first loaded
+  -- init DB
+  self.db = LibStub("AceDB-3.0"):New("RaidRemindersDB", defaults)
+
+  -- AceDBOption profile handler
+  configOptionsTable.args.profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
+
   local isConfigOpen = false
 
   -- Registers slash command to open the Raid Reminders Window
+  AceConfig:RegisterOptionsTable("RaidReminders", configOptionsTable)
   self:RegisterChatCommand("raidreminders", "RaidRemindersToggleWindow")
+  self:RegisterChatCommand("raidrem", "RaidRemindersToggleWindow")
+  self:RegisterChatCommand("rr", "RaidRemindersToggleWindow")
 
   -- Registers the encounter start and end events for when 
   self:RegisterEvent("ENCOUNTER_START", "EncounterStart")
@@ -32,29 +87,8 @@ end
 -- UI --
 --
 local function showFrame()
-  if isConfigOpen then 
-    return
-  else
-    isConfigOpen = true
-  end
-
-  local OptionsContainer = AceGUI:Create("Frame")
-  OptionsContainer:SetTitle("Raid Reminders")
-  OptionsContainer:SetCallback("OnClose", 
-    function(widget)
-      AceGUI:Release(widget)
-      isConfigOpen = false
-    end
-  )
-  OptionsContainer:SetLayout("Flow")
-
-  local button = AceGUI:Create("Button")
-  button:SetText("Add Reminder")
-  button:SetWidth(100)
-  button:SetCallback("OnClick", function()
-    createNewReminder(OptionsContainer)
-  end)
-  OptionsContainer:AddChild(button)
+  AceConfigDialog:SetDefaultSize("RaidReminders", 800, 600)
+  AceConfigDialog:Open("RaidReminders")
 end
 
 function RaidReminders:RaidRemindersToggleWindow(input)
@@ -80,6 +114,7 @@ end
 -- Combat Timer --
 --
 function RaidReminders:ScheduleReminder(text, time, delay)
+  -- math out delay and time
   RaidReminders:ScheduleTimer(function() print(text) end, time)
 end
 
